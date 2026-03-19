@@ -382,12 +382,9 @@ function addSelfBuff(iconKey, name) {
 // Undo removes all keys from the last button press
 function undo() {
   if (!seq.length) return;
-  const lastPress = seq[seq.length - 1].btnPress;
-  // Remove all entries with this btnPress
-  while (seq.length > 0 && seq[seq.length-1].btnPress === lastPress) {
-    seq.pop();
-  }
-  // Also decrement btnPressCount so next press gets correct number
+  // Always remove only the single last builder key
+  seq.pop();
+  // Sync btnPressCount to the last remaining press number
   btnPressCount = seq.length > 0 ? seq[seq.length-1].btnPress : 0;
   renderSeq();
 }
