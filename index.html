@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LOTRO Warden — Gambit Rotation Planner</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --gold:#c8a84b;--gold-l:#f0d080;--gold-d:#6a5018;
+  --bg:#0e0b04;--bg2:#181208;--bg3:#201808;
+  --sp-c:#d45050;--sp-bg:#2a0e0e;--sp-br:#7a2424;
+  --sh-c:#4ec84e;--sh-bg:#0a1e0a;--sh-br:#286428;
+  --fi-c:#d4b030;--fi-bg:#241a04;--fi-br:#785810;
+  --txt:#e8d5a0;--dim:#806840;
+  --bdr:#362808;--bdr2:#5a3e10;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--txt);font-family:'Crimson Text',serif;min-height:100vh}
+header{text-align:center;padding:18px 16px 12px;
+  background:linear-gradient(180deg,#1a1204 0%,var(--bg) 100%);
+  border-bottom:1px solid var(--bdr);position:relative}
+header::after{content:'';position:absolute;bottom:-1px;left:4%;right:4%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold-d),var(--gold),var(--gold-d),transparent)}
+h1{font-family:'Cinzel',serif;font-size:1.7rem;font-weight:900;color:var(--gold);
+  letter-spacing:.1em;text-shadow:0 0 40px rgba(200,168,75,.2)}
+h1 span{color:var(--dim);font-weight:400;font-size:.72rem;display:block;
+  letter-spacing:.24em;margin-top:2px;text-transform:uppercase}
+.app{max-width:1240px;margin:0 auto;padding:18px 12px 50px;
+  display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
+.panel{background:var(--bg2);border:1px solid var(--bdr);border-radius:8px;padding:13px;
+  box-shadow:0 6px 28px rgba(0,0,0,.75),inset 0 1px 0 rgba(200,168,75,.05)}
+.ptitle{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--gold-d);
+  text-transform:uppercase;margin-bottom:9px;padding-bottom:7px;border-bottom:1px solid var(--bdr)}
+
+/* BUTTONS */
+.sbtn{border-radius:6px;border:2px solid var(--bdr);cursor:pointer;background:var(--bg3);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  font-family:'Cinzel',serif;font-size:.42rem;letter-spacing:.04em;font-weight:600;
+  transition:all .11s;padding:4px 3px;text-align:center;line-height:1.1;
+  user-select:none;-webkit-user-select:none}
+.sbtn:active{transform:scale(.9)}
+.sbtn img{width:44px;height:44px;border-radius:5px;display:block}
+.slbl{font-size:.41rem;max-width:64px;word-break:break-word;opacity:.8;line-height:1.15;color:var(--txt)}
+.sbtn.t-sp:hover,.sbtn.t-ss:hover{border-color:var(--sp-c);box-shadow:0 0 12px rgba(212,80,80,.45)}
+.sbtn.t-sh:hover,.sbtn.t-aa:hover{border-color:var(--sh-c);box-shadow:0 0 12px rgba(78,200,78,.45)}
+.sbtn.t-fi:hover,.sbtn.t-cc:hover{border-color:var(--fi-c);box-shadow:0 0 12px rgba(212,176,48,.45)}
+.sbtn.t-sa:hover{border-color:#c86030;box-shadow:0 0 10px rgba(200,96,48,.35)}
+.sbtn.t-as:hover{border-color:#60c840;box-shadow:0 0 10px rgba(96,200,64,.35)}
+.sbtn.t-ca:hover{border-color:#a0c030;box-shadow:0 0 10px rgba(160,192,48,.35)}
+.sbtn.t-sc:hover{border-color:#d07030;box-shadow:0 0 10px rgba(208,112,48,.35)}
+.sbtn.t-ac:hover{border-color:#60c040;box-shadow:0 0 10px rgba(96,192,64,.35)}
+.sbtn.t-cs:hover{border-color:#c08028;box-shadow:0 0 10px rgba(192,128,40,.35)}
+.mgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin-bottom:5px}
+.rdiv{height:1px;background:linear-gradient(90deg,transparent,var(--bdr2),transparent);margin:6px 0;position:relative}
+.rdiv-lbl{position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:var(--bg2);
+  padding:0 7px;font-family:'Cinzel',serif;font-size:.44rem;letter-spacing:.18em;
+  color:var(--gold-d);text-transform:uppercase;white-space:nowrap}
+.brow{display:grid;grid-template-columns:repeat(3,1fr);gap:4px}
+
+/* SEQUENCE BOX */
+.seqbox{background:var(--bg);border:1px solid var(--bdr);border-radius:6px;padding:8px 9px 7px;margin:10px 0 7px}
+.seqtop{display:flex;align-items:center;justify-content:space-between;margin-bottom:5px}
+.seqlbl{font-family:'Cinzel',serif;font-size:.52rem;letter-spacing:.18em;color:var(--gold-d);text-transform:uppercase}
+.undob{background:none;border:1px solid var(--bdr2);border-radius:3px;color:var(--dim);
+  font-size:.56rem;padding:2px 7px;cursor:pointer;font-family:'Cinzel',serif;letter-spacing:.08em;transition:all .11s}
+.undob:hover{border-color:var(--gold-d);color:var(--gold)}
+.pips{display:flex;flex-wrap:wrap;gap:3px;align-items:center;min-height:36px}
+.pip{width:36px;height:36px;border-radius:5px;border:1px solid;position:relative;
+  flex-shrink:0;animation:pop .12s ease;overflow:visible}
+.pip img{width:100%;height:100%;border-radius:4px;display:block}
+.pip .pn{position:absolute;bottom:-2px;right:-2px;font-size:.5rem;font-family:'Cinzel',serif;
+  font-weight:900;color:#fff;line-height:1;background:rgba(0,0,0,.85);border-radius:2px;
+  padding:0 2px;text-shadow:0 0 3px #000;z-index:10}
+@keyframes pop{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.pip.S{border-color:var(--sp-br)}.pip.A{border-color:var(--sh-br)}.pip.C{border-color:var(--fi-br)}
+.sempty{color:var(--dim);font-style:italic;font-size:.74rem;opacity:.6}
+
+/* MATCH BOX */
+.matchbox{background:var(--bg);border:1px solid var(--bdr);border-radius:6px;
+  padding:7px 9px;margin-bottom:8px;min-height:52px;display:flex;gap:9px;align-items:center;transition:border-color .15s}
+.matchbox.confirmed{border-color:var(--gold-d);background:rgba(200,168,75,.04)}
+.matchbox.preview{border-color:#7a5010;background:rgba(180,120,20,.05)}
+.match-icon{width:40px;height:40px;border-radius:5px;flex-shrink:0;border:1px solid var(--bdr2)}
+.match-info{flex:1;min-width:0}
+.mlbl{font-family:'Cinzel',serif;font-size:.5rem;letter-spacing:.18em;color:var(--gold-d);text-transform:uppercase;margin-bottom:2px}
+.mname{font-family:'Cinzel',serif;font-size:.78rem;color:var(--gold-l);font-weight:600}
+.mhint{font-size:.62rem;color:#a07828;margin-top:2px;font-style:italic}
+.mnone{color:var(--dim);font-style:italic;font-size:.72rem}
+
+/* ACTION BUTTONS */
+.btnrow{display:flex;gap:5px}
+.btn{flex:1;padding:9px 5px;border-radius:5px;border:none;cursor:pointer;
+  font-family:'Cinzel',serif;font-size:.55rem;font-weight:700;letter-spacing:.09em;
+  text-transform:uppercase;transition:all .11s}
+.btn-add{background:linear-gradient(135deg,#1a380e,#102208);border:1px solid #2a5616;color:#78cc48}
+.btn-add:hover{background:linear-gradient(135deg,#245014,#163010);box-shadow:0 0 14px rgba(80,200,40,.2)}
+.btn-add:disabled{opacity:.28;cursor:not-allowed;box-shadow:none}
+.btn-x{background:linear-gradient(135deg,#2e0e0e,#1c0808);border:1px solid #581c1c;
+  color:#c05050;flex:0 0 auto;padding:9px 12px;font-size:.66rem}
+.btn-x:hover{border-color:#a82828}
+
+/* ROTATION PANEL */
+.rhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:11px;padding-bottom:8px;border-bottom:1px solid var(--bdr)}
+.rtitle{font-family:'Cinzel',serif;font-size:.6rem;letter-spacing:.22em;color:var(--gold-d);text-transform:uppercase}
+.ract{display:flex;gap:5px}
+.sm-btn{padding:4px 10px;border-radius:3px;border:none;cursor:pointer;font-family:'Cinzel',serif;
+  font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:all .11s}
+.sm-exp{background:#181004;border:1px solid var(--gold-d);color:var(--gold)}
+.sm-exp:hover{border-color:var(--gold)}
+.sm-ca{background:#1c0808;border:1px solid #581c1c;color:#c05050}
+.sm-ca:hover{border-color:#a82828}
+.rlist{display:flex;flex-direction:column;gap:6px;min-height:160px}
+.rempty{display:flex;flex-direction:column;align-items:center;justify-content:center;
+  min-height:150px;color:var(--dim);font-style:italic;font-size:.86rem;gap:6px;opacity:.48}
+.rempty-ico{font-size:2rem;opacity:.45}
+
+/* ROTATION ITEM */
+.ritem{background:var(--bg3);border:1px solid var(--bdr);border-radius:7px;
+  padding:10px;display:flex;align-items:center;gap:10px;
+  animation:slideIn .16s ease;transition:border-color .11s}
+.ritem:hover{border-color:var(--bdr2)}
+@keyframes slideIn{from{transform:translateX(-7px);opacity:0}to{transform:translateX(0);opacity:1}}
+.ritem.dragging{opacity:.33;border-style:dashed}
+.ritem.drag-over{border-color:var(--gold);background:rgba(200,168,75,.03)}
+.inum{font-family:'Cinzel',serif;font-size:.58rem;color:var(--gold-d);width:16px;text-align:center;flex-shrink:0}
+.idrag{color:var(--dim);opacity:.2;font-size:.9rem;cursor:grab;flex-shrink:0;user-select:none;line-height:1;padding:0 1px}
+.idrag:hover{opacity:.6}
+
+/* THE FULL 4x3 GRID */
+.item-grid{display:grid;grid-template-columns:repeat(3,28px);grid-template-rows:repeat(4,28px);
+  gap:2px;padding:3px;background:var(--bg);border:1px solid var(--bdr);border-radius:5px;flex-shrink:0}
+.gc{width:28px;height:28px;border-radius:3px;display:flex;align-items:center;
+  justify-content:center;border:1px solid transparent;position:relative;overflow:visible;flex-shrink:0}
+.gc img{width:24px;height:24px;border-radius:2px;display:block}
+.gc.idle{opacity:.2;filter:grayscale(50%)}
+.gc.act-sp{border-color:var(--sp-br);box-shadow:0 0 5px rgba(212,80,80,.4)}
+.gc.act-sh{border-color:var(--sh-br);box-shadow:0 0 5px rgba(78,200,78,.4)}
+.gc.act-fi{border-color:var(--fi-br);box-shadow:0 0 5px rgba(212,176,48,.4)}
+/* number badges — up to 5 hits tracked, shown as comma-list bottom-right */
+.gc .nbadge{position:absolute;bottom:-3px;right:-3px;font-size:.42rem;font-family:'Cinzel',serif;
+  font-weight:900;color:#fff;line-height:1;background:rgba(0,0,0,.88);border-radius:2px;
+  padding:1px 2px;text-shadow:0 0 2px #000;z-index:10;white-space:nowrap}
+
+/* ITEM RIGHT */
+.item-right{display:flex;align-items:flex-start;gap:9px;flex:1;min-width:0}
+.item-gambit-block{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.gambit-row{display:flex;align-items:center;gap:7px}
+.gico{width:38px;height:38px;border-radius:5px;flex-shrink:0;border:1px solid var(--bdr2)}
+.gico-ph{width:38px;height:38px;border-radius:5px;flex-shrink:0;border:1px dashed var(--bdr2);
+  display:flex;align-items:center;justify-content:center;font-size:.6rem;color:var(--dim);background:var(--bg)}
+.gname{font-family:'Cinzel',serif;font-size:.76rem;color:var(--gold-l);font-weight:600}
+.base-row{display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.base-lbl{font-family:'Cinzel',serif;font-size:.44rem;letter-spacing:.14em;
+  color:var(--gold-d);text-transform:uppercase;margin-right:2px;white-space:nowrap}
+.bpip{width:20px;height:20px;border-radius:3px;border:1px solid;flex-shrink:0;overflow:hidden}
+.bpip img{width:100%;height:100%;display:block}
+.bpip.S{border-color:var(--sp-br);background:var(--sp-bg)}
+.bpip.A{border-color:var(--sh-br);background:var(--sh-bg)}
+.bpip.C{border-color:var(--fi-br);background:var(--fi-bg)}
+.barr{font-size:.7rem;color:var(--dim);line-height:1}
+.idel{background:none;border:none;color:var(--dim);cursor:pointer;font-size:.82rem;
+  padding:3px 5px;border-radius:3px;opacity:.38;transition:all .11s;flex-shrink:0;line-height:1;align-self:center}
+.idel:hover{opacity:1;color:#dc4848;background:rgba(180,36,36,.14)}
+
+.sbar{margin-top:10px;padding:8px 12px;background:var(--bg);border:1px solid var(--bdr);
+  border-radius:6px;display:flex;gap:16px;flex-wrap:wrap}
+.sv{font-family:'Cinzel',serif;font-size:1.2rem;color:var(--gold);display:block}
+.sl{font-size:.52rem;color:var(--dim);letter-spacing:.12em;text-transform:uppercase}
+.leg{margin-top:10px;padding-top:8px;border-top:1px solid var(--bdr);
+  display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.li{display:flex;align-items:center;gap:4px;font-size:.65rem;color:var(--dim)}
+.ld{width:18px;height:18px;border-radius:3px;border:1px solid;overflow:hidden}
+.ld img{width:100%;height:100%;display:block}
+@media(max-width:760px){.app{grid-template-columns:1fr}.panel{position:static!important}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Warden <span>Gambit Rotation Planner · LOTRO</span></h1>
+</header>
+<div class="app">
+
+<div class="panel" style="position:sticky;top:14px">
+  <div class="ptitle">Gambit Builders</div>
+  <div class="mgrid">
+    <button class="sbtn t-sa" onclick="addKeys(['S','A'],0)"><img src="icons/builders/spear_shield.png" alt=""><div class="slbl">Spear-Shield</div></button>
+    <button class="sbtn t-as" onclick="addKeys(['A','S'],1)"><img src="icons/builders/shield_spear.png" alt=""><div class="slbl">Shield-Spear</div></button>
+    <button class="sbtn t-ca" onclick="addKeys(['C','A'],2)"><img src="icons/builders/fist_shield.png" alt=""><div class="slbl">Fist-Shield</div></button>
+    <button class="sbtn t-sc" onclick="addKeys(['S','C'],3)"><img src="icons/builders/spear_fist.png" alt=""><div class="slbl">Spear-Fist</div></button>
+    <button class="sbtn t-ac" onclick="addKeys(['A','C'],4)"><img src="icons/builders/shield_fist.png" alt=""><div class="slbl">Shield-Fist</div></button>
+    <button class="sbtn t-cs" onclick="addKeys(['C','S'],5)"><img src="icons/builders/fist_spear.png" alt=""><div class="slbl">Fist-Spear</div></button>
+    <button class="sbtn t-ss" onclick="addKeys(['S','S'],6)"><img src="icons/builders/spear_spear.png" alt=""><div class="slbl">Spear-Spear</div></button>
+    <button class="sbtn t-aa" onclick="addKeys(['A','A'],7)"><img src="icons/builders/shield_shield.png" alt=""><div class="slbl">Shield-Shield</div></button>
+    <button class="sbtn t-cc" onclick="addKeys(['C','C'],8)"><img src="icons/builders/fist_fist.png" alt=""><div class="slbl">Fist-Fist</div></button>
+  </div>
+  <div class="rdiv"><span class="rdiv-lbl">Single Builders</span></div>
+  <div class="brow">
+    <button class="sbtn t-sp" onclick="addKeys(['S'],9)"><img src="icons/builders/spear.png" alt=""><div class="slbl">Spear</div></button>
+    <button class="sbtn t-sh" onclick="addKeys(['A'],10)"><img src="icons/builders/shield.png" alt=""><div class="slbl">Shield</div></button>
+    <button class="sbtn t-fi" onclick="addKeys(['C'],11)"><img src="icons/builders/fist.png" alt=""><div class="slbl">Fist</div></button>
+  </div>
+  <div class="seqbox">
+    <div class="seqtop">
+      <div class="seqlbl">Current Sequence</div>
+      <button class="undob" onclick="undo()">↩ Undo</button>
+    </div>
+    <div class="pips" id="pips"><span class="sempty">Click builders above…</span></div>
+  </div>
+  <div class="matchbox" id="matchbox">
+    <div class="match-info"><div class="mlbl">Gambit Match</div><div class="mnone">No gambit yet</div></div>
+  </div>
+  <div class="btnrow">
+    <button class="btn btn-add" id="addBtn" onclick="addToRot()" disabled>＋ Add to Rotation</button>
+    <button class="btn btn-x" onclick="clearSeq()">✕ Clear</button>
+  </div>
+</div>
+
+<div class="panel">
+  <div class="rhead">
+    <div class="rtitle">Rotation Plan</div>
+    <div class="ract">
+      <button class="sm-btn sm-exp" onclick="doExport()">Export</button>
+      <button class="sm-btn sm-ca" onclick="clearRot()">Clear All</button>
+    </div>
+  </div>
+  <div class="rlist" id="rlist">
+    <div class="rempty"><div class="rempty-ico">📜</div>
+      <div>Build a gambit sequence and add it here</div>
+      <div style="font-size:.74rem;margin-top:3px">Drag to reorder</div>
+    </div>
+  </div>
+  <div class="sbar" id="sbar" style="display:none">
+    <div class="stat"><span class="sv" id="sv1">0</span><span class="sl">Steps</span></div>
+    <div class="stat"><span class="sv" id="sv2">0</span><span class="sl">Named</span></div>
+    <div class="stat"><span class="sv" id="sv3">0</span><span class="sl">Custom</span></div>
+  </div>
+  <div class="leg">
+    <div class="li"><div class="ld S"><img src="icons/builders/spear.png" alt="S"></div> Spear</div>
+    <div class="li"><div class="ld A"><img src="icons/builders/shield.png" alt="A"></div> Shield</div>
+    <div class="li"><div class="ld C"><img src="icons/builders/fist.png" alt="C"></div> Fist</div>
+  </div>
+</div>
+</div>
+
+<script>
+// ── GRID DEFINITION ───────────────────────────────────────────
+const GRID = [
+  {img:'icons/builders/spear_shield.png',  keys:['S','A'], fk:'S'}, // 0
+  {img:'icons/builders/shield_spear.png',  keys:['A','S'], fk:'A'}, // 1
+  {img:'icons/builders/fist_shield.png',   keys:['C','A'], fk:'C'}, // 2
+  {img:'icons/builders/spear_fist.png',    keys:['S','C'], fk:'S'}, // 3
+  {img:'icons/builders/shield_fist.png',   keys:['A','C'], fk:'A'}, // 4
+  {img:'icons/builders/fist_spear.png',    keys:['C','S'], fk:'C'}, // 5
+  {img:'icons/builders/spear_spear.png',   keys:['S','S'], fk:'S'}, // 6
+  {img:'icons/builders/shield_shield.png', keys:['A','A'], fk:'A'}, // 7
+  {img:'icons/builders/fist_fist.png',     keys:['C','C'], fk:'C'}, // 8
+  {img:'icons/builders/spear.png',  keys:['S'], fk:'S'}, // 9
+  {img:'icons/builders/shield.png', keys:['A'], fk:'A'}, // 10
+  {img:'icons/builders/fist.png',   keys:['C'], fk:'C'}, // 11
+];
+const ACT = {S:'act-sp', A:'act-sh', C:'act-fi'};
+const NM  = {S:'Spear',  A:'Shield', C:'Fist'};
+const SRC = {S:'icons/builders/spear.png', A:'icons/builders/shield.png', C:'icons/builders/fist.png'};
+
+// ── GAMBIT MAP ────────────────────────────────────────────────
+// S=Spear  A=Shield  C=Fist
+// All 42 gambits verified letter-by-letter from the provided list
+const GMAP = {
+  // 2-step
+  'SS':{name:"Deft Strike",            icon:"Deft_Strike"},
+  'SC':{name:"Offensive Strike",       icon:"Offensive_Strike"},
+  'SA':{name:"The Boot",               icon:"The_Boot"},
+  'CS':{name:"Precise Blow",           icon:"Precise_Blow"},
+  'CA':{name:"War-cry",                icon:"War-cry"},
+  'AS':{name:"Persevere",              icon:"Persevere"},
+  'AC':{name:"Impressive Flourish",    icon:"Impressive_Flourish"},
+  'AA':{name:"Defensive Strike",       icon:"Defensive_Strike"},
+  'CC':{name:"Goad",                   icon:"Goad"},
+  // 3-step
+  'SSS':{name:"Combination Strike",    icon:"Combination_Strike"},
+  'SAC':{name:"Power Attack",          icon:"Power_Attack"},
+  'SAS':{name:"Onslaught",             icon:"Onslaught"},
+  'SCA':{name:"Reversal",              icon:"Reversal"},
+  'CSC':{name:"Piercing Strike",       icon:"Piercing_Strike"},
+  'ACS':{name:"Readied Blade",         icon:"Readied_Blade"},
+  'ASC':{name:"Shield Up",             icon:"Shield_Up"},
+  'CAC':{name:"Brink of Victory",      icon:"Brink_of_Victory"},
+  'CAS':{name:"Deflection",            icon:"Deflection"},
+  'CSA':{name:"Fierce Resolve",        icon:"Fierce_Resolve"},
+  'ACA':{name:"Maddening Strike",      icon:"Maddening_Strike"},
+  // 4-step
+  'SACS':{name:"Mighty Blow",          icon:"Mighty_Blow"},           // S+A+C+S
+  'CSCS':{name:"Spear of Virtue",      icon:"Spear_of_Virtue"},       // C+S+C+S
+  'SASA':{name:"Wall of Steel",        icon:"Wall_of_Steel"},         // S+A+S+A
+  'CSAC':{name:"Resolution",           icon:"Resolution"},            // C+S+A+C
+  'CACS':{name:"Resounding Challenge", icon:"Resounding_Challenge"},  // C+A+C+S
+  'AASA':{name:"Safeguard",            icon:"Safeguard"},             // A+A+S+A
+  'ASCA':{name:"Shield Mastery",       icon:"Shield_Mastery"},        // A+S+C+A
+  'ACSA':{name:"Shield Tactics",       icon:"Shield_Tactics"},        // A+C+S+A
+  'CACA':{name:"Surety of Death",      icon:"Surety_of_Death"},       // C+A+C+A
+  'SCAS':{name:"Adroit Manoeuvre",     icon:"Adroit_Manoeuvre"},      // S+C+A+S
+  'SCSC':{name:"Boar's Rush",          icon:"Boars_Rush"},            // S+C+S+C
+  'ASAS':{name:"Celebration of Skill", icon:"Celebration_of_Skill"}, // A+S+A+S
+  'ACAC':{name:"Dance of War",         icon:"Dance_of_War"},          // A+C+A+C
+  // 5-step
+  'SACSA':{name:"Unnerring Strike",     icon:"Unerring_Strike"},      // S+A+C+A+S
+  'SASCS':{name:"The Dark Before Dawn", icon:"The_Dark_Before_Dawn"},  // S+A+S+C+S
+  'SCSCS':{name:"Unseen Strikes",       icon:"Unseen_Strikes"},        // S+C+S+C+S
+  'SASAS':{name:"Cauterizing Steel",    icon:"Cauterizing_Steel"},     // S+A+S+A+S
+  'CSCSC':{name:"Spear of Fate",        icon:"Spear_of_Fate"},         // C+S+S+S+C
+  'ASASA':{name:"Restoration",          icon:"Restoration"},           // A+S+A+S+A
+  'CACAC':{name:"Desolation",           icon:"Desolation"},            // C+A+C+A+C
+  'CSASA':{name:"Exultation of Battle", icon:"Exultation_of_Battle"},  // C+S+A+S+A
+  'ACACA':{name:"Conviction",           icon:"Conviction"},            // A+C+A+C+A
+};
+
+// Sort keys longest-first for best-match lookup
+const GKEYS = Object.keys(GMAP).sort((a,b) => b.length - a.length);
+
+function hasLonger(s) {
+  return GKEYS.some(k => k.startsWith(s) && k.length > s.length);
+}
+
+// Best match: try full length first, shrink until we find a gambit
+function lookupBest(s) {
+  for (let l = s.length; l >= 2; l--) {
+    const g = GMAP[s.slice(0,l)];
+    if (g) return { gambit:g, isPreview: hasLonger(s.slice(0,l)) || l < s.length };
+  }
+  return null;
+}
+
+// ── STATE ─────────────────────────────────────────────────────
+// Each seq entry: { key, cellIdx, btnPress }
+// btnPress = which button-click number produced this key (1-based, counts button presses not keys)
+// This is what we show on the grid cells.
+let seq = [];         // array of {key, cellIdx, btnPress}
+let btnPressCount = 0; // increments once per button click (not per key)
+let rotation = [];
+let dragId = null;
+
+// ── ADDING KEYS ───────────────────────────────────────────────
+// keysArr = ['S'] for single, ['S','A'] for mastery
+// cellIdx = which grid cell button was pressed
+function addKeys(keysArr, cellIdx) {
+  const room = 5 - seq.length;
+  if (room <= 0) return;
+  // Increment button press counter once per button click
+  btnPressCount++;
+  const press = btnPressCount;
+  // Add as many keys as room allows
+  const toAdd = keysArr.slice(0, room);
+  for (const key of toAdd) {
+    seq.push({ key, cellIdx, btnPress: press });
+  }
+  renderSeq();
+}
+
+// ── UNDO ──────────────────────────────────────────────────────
+// Undo removes all keys from the last button press
+function undo() {
+  if (!seq.length) return;
+  const lastPress = seq[seq.length - 1].btnPress;
+  // Remove all entries with this btnPress
+  while (seq.length > 0 && seq[seq.length-1].btnPress === lastPress) {
+    seq.pop();
+  }
+  // Also decrement btnPressCount so next press gets correct number
+  btnPressCount = seq.length > 0 ? seq[seq.length-1].btnPress : 0;
+  renderSeq();
+}
+
+function clearSeq() { seq = []; btnPressCount = 0; renderSeq(); }
+
+// ── RENDER SEQUENCE PREVIEW ───────────────────────────────────
+function renderSeq() {
+  const pipsEl = document.getElementById('pips');
+  const btn    = document.getElementById('addBtn');
+  if (!seq.length) {
+    pipsEl.innerHTML = '<span class="sempty">Click builders above…</span>';
+    btn.disabled = true;
+    renderMatch(null);
+    return;
+  }
+  // Show individual key pips numbered by btnPress
+  pipsEl.innerHTML = seq.map(e =>
+    `<div class="pip ${e.key}">
+       <img src="${SRC[e.key]}" alt="${e.key}">
+       <span class="pn">${e.btnPress}</span>
+     </div>`
+  ).join('');
+  const s = seq.map(e=>e.key).join('');
+  const result = lookupBest(s);
+  btn.disabled = !result;
+  renderMatch(result);
+}
+
+// ── RENDER MATCH BOX ──────────────────────────────────────────
+function renderMatch(result) {
+  const el = document.getElementById('matchbox');
+  if (!result) {
+    el.className = 'matchbox';
+    el.innerHTML = `<div class="match-info"><div class="mlbl">Gambit Match</div><div class="mnone">No match — keep building</div></div>`;
+    return;
+  }
+  const {gambit:g, isPreview} = result;
+  el.className = 'matchbox ' + (isPreview ? 'preview' : 'confirmed');
+  const hint = isPreview ? `<div class="mhint">↑ Can extend further — or add now</div>` : '';
+  el.innerHTML = `
+    <img src="icons/gambits/${g.icon}.png" alt="${g.name}" class="match-icon" onerror="this.style.display='none'">
+    <div class="match-info">
+      <div class="mlbl">Gambit Match</div>
+      <div class="mname">${g.name}</div>${hint}
+    </div>`;
+}
+
+// ── BUILD FULL GRID HTML ───────────────────────────────────────
+// For each cell: show which button-press numbers hit it.
+// Numbers shown = the btnPress values for all hits on that cell.
+// e.g. if spear_fist was pressed as btn-press 1 and again as btn-press 3 → shows "1,3"
+function buildFullGrid(savedSeq) {
+  // hitMap: cellIdx → [btnPress, btnPress, ...]  (in order)
+  const hitMap = {};
+  savedSeq.forEach(e => {
+    // Each key in the seq has a cellIdx and btnPress
+    // Group by cellIdx, collect unique btnPress values in order
+    if (!hitMap[e.cellIdx]) hitMap[e.cellIdx] = [];
+    // Only add if this btnPress not already listed for this cell
+    if (!hitMap[e.cellIdx].includes(e.btnPress)) {
+      hitMap[e.cellIdx].push(e.btnPress);
+    }
+  });
+
+  let html = '<div class="item-grid">';
+  GRID.forEach((cell, idx) => {
+    const presses = hitMap[idx] || [];
+    const active = presses.length > 0;
+    const cls = active ? ACT[cell.fk] : 'idle';
+    const badge = active ? `<span class="nbadge">${presses.join(',')}</span>` : '';
+    html += `<div class="gc ${cls}"><img src="${cell.img}" alt="" draggable="false">${badge}</div>`;
+  });
+  return html + '</div>';
+}
+
+function buildBasePips(savedSeq) {
+  const parts = savedSeq.map(e =>
+    `<div class="bpip ${e.key}"><img src="${SRC[e.key]}" alt="${e.key}"></div>`
+  );
+  return `<div class="base-row"><span class="base-lbl">Builders:</span>${parts.join('<span class="barr">›</span>')}</div>`;
+}
+
+// ── ROTATION ──────────────────────────────────────────────────
+function addToRot() {
+  if (!seq.length) return;
+  const s = seq.map(e=>e.key).join('');
+  const result = lookupBest(s);
+  if (!result) return;
+  rotation.push({ id:Date.now()+Math.random(), seq:[...seq], gambit:result.gambit });
+  renderRot();
+  clearSeq();
+}
+
+function deleteItem(id) { rotation = rotation.filter(r=>r.id!==id); renderRot(); }
+
+function clearRot() {
+  if (!rotation.length) return;
+  if (confirm('Clear entire rotation?')) { rotation=[]; renderRot(); }
+}
+
+function renderRot() {
+  const list = document.getElementById('rlist');
+  const bar  = document.getElementById('sbar');
+  if (!rotation.length) {
+    list.innerHTML=`<div class="rempty"><div class="rempty-ico">📜</div>
+      <div>Build a gambit sequence and add it here</div>
+      <div style="font-size:.74rem;margin-top:3px">Drag to reorder</div></div>`;
+    bar.style.display='none'; return;
+  }
+  list.innerHTML = rotation.map((e,i) => {
+    const id   = e.id;
+    const grid = buildFullGrid(e.seq);
+    const base = buildBasePips(e.seq);
+    const iconTag = `<img src="icons/gambits/${e.gambit.icon}.png" alt="${e.gambit.name}" class="gico" onerror="this.style.display='none'">`;
+    return `<div class="ritem" draggable="true"
+        ondragstart="ds(event,${id})" ondragover="dv(event)"
+        ondrop="dd(event,${id})" ondragend="de(event)">
+      <span class="idrag">⠿</span>
+      <div class="inum">${i+1}</div>
+      ${grid}
+      <div class="item-right">
+        <div class="item-gambit-block">
+          <div class="gambit-row">${iconTag}<span class="gname">${e.gambit.name}</span></div>
+          ${base}
+        </div>
+        <button class="idel" onclick="deleteItem(${id})" title="Remove">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('sv1').textContent = rotation.length;
+  document.getElementById('sv2').textContent = rotation.length; // all named
+  document.getElementById('sv3').textContent = 0;
+  bar.style.display = 'flex';
+}
+
+// ── DRAG ──────────────────────────────────────────────────────
+function ds(e,id){dragId=id;e.target.closest('.ritem').classList.add('dragging');e.dataTransfer.effectAllowed='move'}
+function dv(e){e.preventDefault();document.querySelectorAll('.ritem').forEach(x=>x.classList.remove('drag-over'));const t=e.target.closest('.ritem');if(t)t.classList.add('drag-over')}
+function dd(e,tid){e.preventDefault();if(dragId===tid)return;const si=rotation.findIndex(r=>r.id===dragId),ti=rotation.findIndex(r=>r.id===tid);const[m]=rotation.splice(si,1);rotation.splice(ti,0,m);renderRot()}
+function de(){document.querySelectorAll('.ritem').forEach(x=>x.classList.remove('dragging','drag-over'))}
+
+// ── EXPORT ────────────────────────────────────────────────────
+function doExport(){
+  if(!rotation.length){alert('Nothing to export!');return}
+  let out='LOTRO Warden — Rotation Plan\n'+'─'.repeat(42)+'\n\n';
+  rotation.forEach((e,i)=>{
+    const seqStr=e.seq.map(s=>NM[s.key]).join(' – ');
+    out+=`${String(i+1).padStart(2,'0')}. ${e.gambit.name}\n    ${seqStr}\n\n`;
+  });
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([out],{type:'text/plain'}));
+  a.download='warden-rotation.txt'; a.click();
+}
+</script>
+</body>
+</html>
