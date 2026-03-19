@@ -111,6 +111,8 @@ h1 span{color:var(--dim);font-weight:400;font-size:.72rem;display:block;
   font-size:.48rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;transition:all .11s}
 .sm-exp{background:#181004;border:1px solid var(--gold-d);color:var(--gold)}
 .sm-exp:hover{border-color:var(--gold)}
+.sm-imp{background:#0a1828;border:1px solid #1e4a7a;color:#70a8e0}
+.sm-imp:hover{border-color:#4080c0}
 .sm-ca{background:#1c0808;border:1px solid #581c1c;color:#c05050}
 .sm-ca:hover{border-color:#a82828}
 .rlist{display:flex;flex-direction:column;gap:6px;min-height:160px}
@@ -230,6 +232,7 @@ h1 span{color:var(--dim);font-weight:400;font-size:.72rem;display:block;
     <div class="rtitle">Rotation Plan</div>
     <div class="ract">
       <button class="sm-btn sm-exp" onclick="doExport()">Export</button>
+      <button class="sm-btn sm-imp" onclick="doImport()">Import</button>
       <button class="sm-btn sm-ca" onclick="clearRot()">Clear All</button>
     </div>
   </div>
@@ -546,12 +549,83 @@ function doExport(){
   if(!rotation.length){alert('Nothing to export!');return}
   let out='LOTRO Warden — Rotation Plan\n'+'─'.repeat(42)+'\n\n';
   rotation.forEach((e,i)=>{
-    const seqStr=e.seq.map(s=>NM[s.key]).join(' – ');
-    out+=`${String(i+1).padStart(2,'0')}. ${e.gambit.name}\n    ${seqStr}\n\n`;
+    const num=String(i+1).padStart(2,'0');
+    if(e.selfBuff){
+      out+=`${num}. [BUFF] ${e.selfBuff.name}\n`;
+      out+=`    DATA:BUFF:${e.selfBuff.icon}\n\n`;
+    } else {
+      const seqStr=e.seq.map(s=>NM[s.key]).join(' – ');
+      // DATA line encodes: key,cellIdx,btnPress for each step separated by |
+      const dataStr=e.seq.map(s=>`${s.key},${s.cellIdx},${s.btnPress}`).join('|');
+      out+=`${num}. ${e.gambit.name}\n`;
+      out+=`    ${seqStr}\n`;
+      out+=`    DATA:GAMBIT:${dataStr}\n\n`;
+    }
   });
   const a=document.createElement('a');
   a.href=URL.createObjectURL(new Blob([out],{type:'text/plain'}));
   a.download='warden-rotation.txt'; a.click();
+}
+
+// ── IMPORT ────────────────────────────────────────────────────
+function doImport(){
+  const input=document.createElement('input');
+  input.type='file'; input.accept='.txt';
+  input.onchange=e=>{
+    const file=e.target.files[0];
+    if(!file) return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      const lines=ev.target.result.split('\n');
+      const newRotation=[];
+      let i=0;
+      while(i<lines.length){
+        const line=lines[i].trim();
+        // Find DATA lines
+        if(line.startsWith('DATA:BUFF:')){
+          const iconKey=line.slice('DATA:BUFF:'.length).trim();
+          const name=SELF_BUFF_NAMES[iconKey]||iconKey.replace(/_/g,' ');
+          newRotation.push({
+            id:Date.now()+Math.random(),
+            seq:[],
+            gambit:null,
+            selfBuff:{icon:iconKey,name:name},
+          });
+        } else if(line.startsWith('DATA:GAMBIT:')){
+          const dataStr=line.slice('DATA:GAMBIT:'.length).trim();
+          if(!dataStr){i++;continue;}
+          const steps=dataStr.split('|').map(s=>{
+            const [key,cellIdx,btnPress]=s.split(',');
+            return {key,cellIdx:parseInt(cellIdx),btnPress:parseInt(btnPress)};
+          });
+          // Lookup gambit from reconstructed sequence
+          const seqStr=steps.map(s=>s.key).join('');
+          const result=lookupBest(seqStr);
+          if(result){
+            newRotation.push({
+              id:Date.now()+Math.random(),
+              seq:steps,
+              gambit:result.gambit,
+              selfBuff:null,
+            });
+          }
+        }
+        i++;
+      }
+      if(!newRotation.length){
+        alert('No valid rotation data found in this file.');
+        return;
+      }
+      if(rotation.length>0){
+        if(!confirm(`Replace current rotation (${rotation.length} steps) with imported rotation (${newRotation.length} steps)?`)) return;
+      }
+      rotation=newRotation;
+      renderRot();
+      alert(`Imported ${newRotation.length} step${newRotation.length!==1?'s':''} successfully!`);
+    };
+    reader.readAsText(file);
+  };
+  input.click();
 }
 </script>
 </body>
