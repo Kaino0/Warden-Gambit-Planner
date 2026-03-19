@@ -184,21 +184,21 @@ h1 span{color:var(--dim);font-weight:400;font-size:.72rem;display:block;
 <div class="panel" style="position:sticky;top:14px">
   <div class="ptitle">Gambit Builders</div>
   <div class="mgrid">
-    <button class="sbtn t-sa" onclick="addKeys(['S','A'],0)"><img src="icons/builders/Spear_Shield.png" alt=""><div class="slbl">Spear-Shield</div></button>
-    <button class="sbtn t-as" onclick="addKeys(['A','S'],1)"><img src="icons/builders/Shield_spear.png" alt=""><div class="slbl">Shield-Spear</div></button>
-    <button class="sbtn t-ca" onclick="addKeys(['C','A'],2)"><img src="icons/builders/Fist_shield.png" alt=""><div class="slbl">Fist-Shield</div></button>
-    <button class="sbtn t-sc" onclick="addKeys(['S','C'],3)"><img src="icons/builders/Spear_fist.png" alt=""><div class="slbl">Spear-Fist</div></button>
-    <button class="sbtn t-ac" onclick="addKeys(['A','C'],4)"><img src="icons/builders/Shield_fist.png" alt=""><div class="slbl">Shield-Fist</div></button>
-    <button class="sbtn t-cs" onclick="addKeys(['C','S'],5)"><img src="icons/builders/Fist_spear.png" alt=""><div class="slbl">Fist-Spear</div></button>
-    <button class="sbtn t-ss" onclick="addKeys(['S','S'],6)"><img src="icons/builders/Spear_spear.png" alt=""><div class="slbl">Spear-Spear</div></button>
-    <button class="sbtn t-aa" onclick="addKeys(['A','A'],7)"><img src="icons/builders/Shield_shield.png" alt=""><div class="slbl">Shield-Shield</div></button>
-    <button class="sbtn t-cc" onclick="addKeys(['C','C'],8)"><img src="icons/builders/Fist_Fist.png" alt=""><div class="slbl">Fist-Fist</div></button>
+    <button class="sbtn t-sa" onclick="addKeys(['S','A'],0)"><img src="icons/builders/spear_shield.png" alt=""><div class="slbl">spear-shield</div></button>
+    <button class="sbtn t-as" onclick="addKeys(['A','S'],1)"><img src="icons/builders/shield_spear.png" alt=""><div class="slbl">shield-spear</div></button>
+    <button class="sbtn t-ca" onclick="addKeys(['C','A'],2)"><img src="icons/builders/fist_shield.png" alt=""><div class="slbl">fist-shield</div></button>
+    <button class="sbtn t-sc" onclick="addKeys(['S','C'],3)"><img src="icons/builders/spear_fist.png" alt=""><div class="slbl">spear-fist</div></button>
+    <button class="sbtn t-ac" onclick="addKeys(['A','C'],4)"><img src="icons/builders/shield_fist.png" alt=""><div class="slbl">shield-fist</div></button>
+    <button class="sbtn t-cs" onclick="addKeys(['C','S'],5)"><img src="icons/builders/fist_spear.png" alt=""><div class="slbl">fist-spear</div></button>
+    <button class="sbtn t-ss" onclick="addKeys(['S','S'],6)"><img src="icons/builders/spear_spear.png" alt=""><div class="slbl">spear-spear</div></button>
+    <button class="sbtn t-aa" onclick="addKeys(['A','A'],7)"><img src="icons/builders/shield_shield.png" alt=""><div class="slbl">shield-shield</div></button>
+    <button class="sbtn t-cc" onclick="addKeys(['C','C'],8)"><img src="icons/builders/fist_fist.png" alt=""><div class="slbl">fist-fist</div></button>
   </div>
   <div class="rdiv"><span class="rdiv-lbl">Single Builders</span></div>
   <div class="brow">
-    <button class="sbtn t-sp" onclick="addKeys(['S'],9)"><img src="icons/builders/spear.png" alt=""><div class="slbl">Spear</div></button>
-    <button class="sbtn t-sh" onclick="addKeys(['A'],10)"><img src="icons/builders/Shield.png" alt=""><div class="slbl">Shield</div></button>
-    <button class="sbtn t-fi" onclick="addKeys(['C'],11)"><img src="icons/builders/fist.png" alt=""><div class="slbl">Fist</div></button>
+    <button class="sbtn t-sp" onclick="addKeys(['S'],9)"><img src="icons/builders/spear.png" alt=""><div class="slbl">spear</div></button>
+    <button class="sbtn t-sh" onclick="addKeys(['A'],10)"><img src="icons/builders/shield.png" alt=""><div class="slbl">shield</div></button>
+    <button class="sbtn t-fi" onclick="addKeys(['C'],11)"><img src="icons/builders/fist.png" alt=""><div class="slbl">fist</div></button>
   </div>
   <div class="seqbox">
     <div class="seqtop">
@@ -236,9 +236,9 @@ h1 span{color:var(--dim);font-weight:400;font-size:.72rem;display:block;
     <div class="stat"><span class="sv" id="sv3">0</span><span class="sl">Custom</span></div>
   </div>
   <div class="leg">
-    <div class="li"><div class="ld S"><img src="icons/builders/spear.png" alt="S"></div> Spear</div>
-    <div class="li"><div class="ld A"><img src="icons/builders/shield.png" alt="A"></div> Shield</div>
-    <div class="li"><div class="ld C"><img src="icons/builders/fist.png" alt="C"></div> Fist</div>
+    <div class="li"><div class="ld S"><img src="icons/builders/spear.png" alt="S"></div> spear</div>
+    <div class="li"><div class="ld A"><img src="icons/builders/shield.png" alt="A"></div> shield</div>
+    <div class="li"><div class="ld C"><img src="icons/builders/fist.png" alt="C"></div> fist</div>
   </div>
 </div>
 </div>
@@ -260,11 +260,11 @@ const GRID = [
   {img:'icons/builders/fist.png',   keys:['C'], fk:'C'}, // 11
 ];
 const ACT = {S:'act-sp', A:'act-sh', C:'act-fi'};
-const NM  = {S:'Spear',  A:'Shield', C:'Fist'};
+const NM  = {S:'spear',  A:'shield', C:'fist'};
 const SRC = {S:'icons/builders/spear.png', A:'icons/builders/shield.png', C:'icons/builders/fist.png'};
 
 // ── GAMBIT MAP ────────────────────────────────────────────────
-// S=Spear  A=Shield  C=Fist
+// S=spear  A=shield  C=fist
 // All 42 gambits verified letter-by-letter from the provided list
 const GMAP = {
   // 2-step
@@ -284,20 +284,20 @@ const GMAP = {
   'SCA':{name:"Reversal",              icon:"Reversal"},
   'CSC':{name:"Piercing Strike",       icon:"Piercing_Strike"},
   'ACS':{name:"Readied Blade",         icon:"Readied_Blade"},
-  'ASC':{name:"Shield Up",             icon:"Shield_Up"},
+  'ASC':{name:"shield Up",             icon:"shield_Up"},
   'CAC':{name:"Brink of Victory",      icon:"Brink_of_Victory"},
   'CAS':{name:"Deflection",            icon:"Deflection"},
   'CSA':{name:"Fierce Resolve",        icon:"Fierce_Resolve"},
   'ACA':{name:"Maddening Strike",      icon:"Maddening_Strike"},
   // 4-step
   'SACS':{name:"Mighty Blow",          icon:"Mighty_Blow"},           // S+A+C+S
-  'CSCS':{name:"Spear of Virtue",      icon:"Spear_of_Virtue"},       // C+S+C+S
+  'CSCS':{name:"spear of Virtue",      icon:"spear_of_Virtue"},       // C+S+C+S
   'SASA':{name:"Wall of Steel",        icon:"Wall_of_Steel"},         // S+A+S+A
   'CSAC':{name:"Resolution",           icon:"Resolution"},            // C+S+A+C
   'CACS':{name:"Resounding Challenge", icon:"Resounding_Challenge"},  // C+A+C+S
   'AASA':{name:"Safeguard",            icon:"Safeguard"},             // A+A+S+A
-  'ASCA':{name:"Shield Mastery",       icon:"Shield_Mastery"},        // A+S+C+A
-  'ACSA':{name:"Shield Tactics",       icon:"Shield_Tactics"},        // A+C+S+A
+  'ASCA':{name:"shield Mastery",       icon:"shield_Mastery"},        // A+S+C+A
+  'ACSA':{name:"shield Tactics",       icon:"shield_Tactics"},        // A+C+S+A
   'CACA':{name:"Surety of Death",      icon:"Surety_of_Death"},       // C+A+C+A
   'SCAS':{name:"Adroit Manoeuvre",     icon:"Adroit_Manoeuvre"},      // S+C+A+S
   'SCSC':{name:"Boar's Rush",          icon:"Boars_Rush"},            // S+C+S+C
@@ -308,7 +308,7 @@ const GMAP = {
   'SASCS':{name:"The Dark Before Dawn", icon:"The_Dark_Before_Dawn"},  // S+A+S+C+S
   'SCSCS':{name:"Unseen Strikes",       icon:"Unseen_Strikes"},        // S+C+S+C+S
   'SASAS':{name:"Cauterizing Steel",    icon:"Cauterizing_Steel"},     // S+A+S+A+S
-  'CSCSC':{name:"Spear of Fate",        icon:"Spear_of_Fate"},         // C+S+S+S+C
+  'CSCSC':{name:"spear of Fate",        icon:"spear_of_Fate"},         // C+S+S+S+C
   'ASASA':{name:"Restoration",          icon:"Restoration"},           // A+S+A+S+A
   'CACAC':{name:"Desolation",           icon:"Desolation"},            // C+A+C+A+C
   'CSASA':{name:"Exultation of Battle", icon:"Exultation_of_Battle"},  // C+S+A+S+A
