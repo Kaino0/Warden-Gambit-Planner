@@ -329,7 +329,10 @@ const GMAP = {
 
 // Sort keys longest-first for best-match lookup
 const GKEYS = Object.keys(GMAP).sort((a,b) => b.length - a.length);
-
+const SELF_BUFF_NAMES = {
+  'Rapid_Techniques': 'Rapid Techniques',
+  'Recklessness':     'Recklessness',
+};
 function hasLonger(s) {
   return GKEYS.some(k => k.startsWith(s) && k.length > s.length);
 }
